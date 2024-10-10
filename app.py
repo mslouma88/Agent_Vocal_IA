@@ -101,6 +101,93 @@ def analyze_sentiment(text):
 # Interface Streamlit
 st.title("🤖 Agent Vocal et Textuel Futuriste v2.1")
 
+# Define the themes
+themes = {
+   
+    "Dark Mode": {
+        "background-color": "#121212",
+        "color": "#FFFFFF",
+        "button-background-color": "#FFFFFF",
+        "button-color": "#121212",
+        "button-box-shadow": "0 0 10px #FFFFFF",
+        "sidebar-background-color": "#222222",
+        "sidebar-color": "#FFFFFF",
+        "sidebar-box-shadow": "0 0 10px #FFFFFF",
+    },
+    "Blue Futuristic": {
+        "background-color": "#000000",
+        "color": "#00FFFF",
+        "button-background-color": "#00FFFF",
+        "button-color": "#000000",
+        "button-box-shadow": "0 0 10px #00FFFF",
+        "sidebar-background-color": "#00008B",
+        "sidebar-color": "#00FFFF",
+        "sidebar-box-shadow": "0 0 10px #00FFFF",
+    },
+    "Gaming": {
+        "background-color": "#000000",
+        "color": "#FFA500",
+        "button-background-color": "#FFA500",
+        "button-color": "#000000",
+        "button-box-shadow": "0 0 10px #FFA500",
+        "sidebar-background-color": "#222222",
+        "sidebar-color": "#FFA500",
+        "sidebar-box-shadow": "0 0 10px #FFA500",
+    },
+    "Neon": {
+        "background-color": "#000000",
+        "color": "#00FFFF",
+        "button-background-color": "#00FFFF",
+        "button-color": "#000000",
+        "button-box-shadow": "0 0 20px #00FFFF",
+        "sidebar-background-color": "#000000",
+        "sidebar-color": "#00FFFF",
+        "sidebar-box-shadow": "0 0 20px #00FFFF",
+    },
+}
+
+# Set the initial theme
+theme = "Dark Mode"
+
+# Define a function to update the theme
+def update_theme(theme):
+    st.markdown(f"""
+        <style>
+        .stApp {{
+            background-color: {themes[theme]['background-color']};
+            color: {themes[theme]['color']};
+            font-family: 'Courier New', Courier, monospace;
+        }}
+        .stButton>button {{
+            background-color: {themes[theme]['button-background-color']};
+            color: {themes[theme]['button-color']};
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            box-shadow: {themes[theme]['button-box-shadow']};
+        }}
+        .stButton>button:hover {{
+            background-color: {themes[theme]['button-color']};
+            color: {themes[theme]['button-background-color']};
+            border: 2px solid {themes[theme]['button-background-color']};
+            box-shadow: 0 0 20px {themes[theme]['button-background-color']};
+        }}
+        .stSidebar {{
+            background-color: {themes[theme]['sidebar-background-color']};
+            color: {themes[theme]['sidebar-color']};
+            box-shadow: {themes[theme]['sidebar-box-shadow']};
+        }}
+        </style>
+    """, unsafe_allow_html=True)
+
+# Add a theme selection dropdown menu to the sidebar
+theme = st.sidebar.selectbox("Choisissez un thème", list(themes.keys()), index=0, on_change=update_theme, args=(theme,))
+
+# Update the theme
+update_theme(theme)
+
+
 # Initialiser le contexte de la conversation
 if 'context' not in st.session_state:
     st.session_state.context = []
@@ -207,5 +294,6 @@ if st.sidebar.checkbox("🌙 Mode nuit"):
             background-color: #1E1E1E;
             color: white;
         }
+                
         </style>
     """, unsafe_allow_html=True)

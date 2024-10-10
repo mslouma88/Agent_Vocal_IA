@@ -2,7 +2,8 @@ streamlit==1.39.0
 SpeechRecognition==3.10.4
 openai==0.28.0
 pyttsx3==2.98
-pygame==2.1.2 --no-deps
+pygame==2.1.2
 gTTS==2.5.3
 textblob==0.18.0.post0
-PyAudio==0.2.11 --global-option="build_ext" --global-option="-I/usr/local/include" --global-option="-L/usr/local/lib"
+PyAudio==0.2.11
+python-dotenv==1.0.1
