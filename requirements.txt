@@ -6,6 +6,7 @@ pygame==2.6.1
 textblob==0.18.0
 pygame==2.6.1
 PyAudio==0.2.14
+soundfile==0.12.1
 
 
 
