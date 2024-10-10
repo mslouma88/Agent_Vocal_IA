@@ -1,3 +1,9 @@
+<!--![Logo de mon projet](images/IA.png)-->
+
+<img src="images/IA.png" alt="Logo de mon projet" >
+
+
+
 # 💬 Agent Vocal Futuriste avec ChatGPT
 
 Ce projet consiste en un agent vocal interactif qui utilise le modèle de langage GPT (ChatGPT) pour répondre aux questions des utilisateurs. L'application est dotée d'une interface graphique futuriste créée avec **Streamlit** et comprend la reconnaissance vocale, l'interaction avec le modèle GPT, et la synthèse vocale.
@@ -26,6 +32,12 @@ Suivez les étapes ci-dessous pour exécuter l'application localement sur votre 
 Assurez-vous d'avoir les éléments suivants installés :
 - [Python 3.7+](https://www.python.org/downloads/)
 - `pip` (gestionnaire de paquets pour Python)
+- Streamlit
+- OpenAI API
+- SpeechRecognition
+- gTTS (Google Text-to-Speech)
+- Pygame
+- TextBlob
 
 ### Installation des Dépendances
 
@@ -87,9 +99,21 @@ Pour déployer cette application sur Streamlit Cloud :
 
     ```text
     streamlit
-    openai
-    speechrecognition
+    speech_recognition
+    openai==0.28
     pyttsx3
+    threading
+    random
+    time
+    gtts
+    os
+    pygame
+    textblob
+    os
+    tempfile
+    uuid
+    io
+    setuptools
     ```
 
 3. Connectez-vous à [Streamlit Cloud](https://streamlit.io/cloud).
@@ -115,10 +139,10 @@ Ce projet est sous [licence MIT](LICENCE). Vous êtes libre de l'utiliser, de le
 
 👤 Auteur(e)s
 
-Mr MEJRI Salam - Développeur et concepteur principal de l'agent vocal.
-Mme BENAMOR Nesrine - Développeur et concepteur principal de l'agent vocal.
+- **Salam MEJRI** 🧑‍💻 - [@github](https://github.com/mslouma88) - Développeur et concepteur principal de l'agent vocal.
+- **Nesrine BENAMOR** 🧑‍💻 - [@github](https://github.com/Nes890) - Développeur et concepteur principal de l'agent vocal.
 
-Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue ou à me contacter.
+Pour toute question ou suggestion, n'hésitez pas à me contacter.
 
 
 Merci d'avoir utilisé cet agent vocal futuriste ! 🚀
