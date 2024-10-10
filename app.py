@@ -1,13 +1,18 @@
 import streamlit as st
 import speech_recognition as sr
 import openai
+import pyttsx3
+import threading
 import random
+import time
 from gtts import gTTS
+import os
 import pygame
 from textblob import TextBlob
-import io
 import os
-os.environ["SDL_AUDIODRIVER"] = "dummy"
+import tempfile
+import uuid
+import io
 
 #st.write("Test d'affichage")
 # Configuration de l'API OpenAI
