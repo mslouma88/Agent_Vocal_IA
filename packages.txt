@@ -1,2 +1,5 @@
 portaudio19-dev
 python3-all-dev
+libsdl2-dev
+libfreetype6-dev
+libportaudio2
