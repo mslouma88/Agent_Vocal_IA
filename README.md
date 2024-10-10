@@ -101,19 +101,11 @@ Pour déployer cette application sur Streamlit Cloud :
     streamlit
     speech_recognition
     openai==0.28
-    pyttsx3
-    threading
     random
-    time
     gtts
-    os
     pygame
     textblob
-    os
-    tempfile
-    uuid
     io
-    setuptools
     ```
 
 3. Connectez-vous à [Streamlit Cloud](https://streamlit.io/cloud).
