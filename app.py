@@ -6,6 +6,7 @@ from gtts import gTTS
 import pygame
 from textblob import TextBlob
 import io
+import os
 
 #st.write("Test d'affichage")
 # Configuration de l'API OpenAI
