@@ -7,6 +7,7 @@ import pygame
 from textblob import TextBlob
 import io
 import os
+os.environ["SDL_AUDIODRIVER"] = "dummy"
 
 #st.write("Test d'affichage")
 # Configuration de l'API OpenAI
