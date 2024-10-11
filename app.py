@@ -2,43 +2,32 @@ import datetime
 import streamlit as st
 import speech_recognition as sr
 import openai
-#import pyttsx3
-import threading
 import random
-#import time
 from gtts import gTTS
-import pygame
 from textblob import TextBlob
-#import tempfile
-import uuid
 import io
-
 import os
 
 # Vérifier si on est sur Streamlit Cloud
 if os.environ.get('STREAMLIT_SERVER_HEADLESS'):
-    # Si on est sur Streamlit Cloud, désactiver pygame ou une partie du code liée à SDL
-    print("Exécution sur Streamlit Cloud - Pygame désactivé")
+    # Si on est sur Streamlit Cloud, désactiver pygame ou toute dépendance audio liée à SDL
+    st.write("Exécution sur Streamlit Cloud - Pygame désactivé")
+    pygame_enabled = False
 else:
     # Si on est local, on peut utiliser pygame
     import pygame
     pygame.init()
-    print("Exécution locale - Pygame activé")
-    # Ton code pygame ici
-
+    pygame.mixer.init()
+    pygame_enabled = True
+    st.write("Exécution locale - Pygame activé")
 
 # Set page config with an icon
-#st.set_page_config(page_title="Agent Vocal", page_icon=":smiley:")
-st.set_page_config(page_title="Agent Vocal", page_icon="images/icon.png")
+#st.set_page_config(page_title="Agent Vocal", page_icon="images/icon.png")
 
-#st.write("Test d'affichage")
 # Configuration de l'API OpenAI
 openai.api_key = st.secrets["openai"]["api_key"]
 
-# Initialisation de pygame pour la lecture audio
-pygame.mixer.init()
-
-# Fonction de reconnaissance vocale améliorée
+# Fonction de reconnaissance vocale
 def recognize_speech():
     recognizer = sr.Recognizer()
     microphone = sr.Microphone()
@@ -79,30 +68,21 @@ def speak_text(text):
     
     # Créer un tampon en mémoire
     fp = io.BytesIO()
-    
-    # Sauvegarder l'audio dans le tampon en mémoire
     tts.write_to_fp(fp)
-    
-    # Rembobiner le tampon au début
     fp.seek(0)
     
-    try:
-        # Charger l'audio depuis le tampon en mémoire
-        pygame.mixer.music.load(fp)
-        
-        # Jouer l'audio
-        pygame.mixer.music.play()
-        
-        # Attendre que la lecture soit terminée
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
-    
-    except Exception as e:
-        st.error(f"Erreur lors de la lecture audio : {e}")
-    
-    finally:
-        # Nettoyer le tampon en mémoire
-        fp.close()
+    if pygame_enabled:
+        try:
+            pygame.mixer.music.load(fp)
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)
+        except Exception as e:
+            st.error(f"Erreur lors de la lecture audio : {e}")
+        finally:
+            fp.close()
+    else:
+        st.audio(fp, format="audio/mp3")
 
 # Fonction pour analyser le sentiment
 def analyze_sentiment(text):
@@ -117,96 +97,7 @@ def analyze_sentiment(text):
 
 # Interface Streamlit
 st.title("🤖 Agent Vocal & Textuel v1.0")
-
-# Ajouter un logo à la barre latérale
 st.sidebar.image("images/logo3.png", width=280)
-
-# Define the themes
-themes = {
-   
-    "Dark Mode": {
-        "background-color": "#121212",
-        "color": "#FFFFFF",
-        "button-background-color": "#FFFFFF",
-        "button-color": "#121212",
-        "button-box-shadow": "0 0 10px #FFFFFF",
-        "sidebar-background-color": "#222222",
-        "sidebar-color": "#FFFFFF",
-        "sidebar-box-shadow": "0 0 10px #FFFFFF",
-    },
-    "Blue": {
-        "background-color": "#000000",
-        "color": "#00FFFF",
-        "button-background-color": "#00FFFF",
-        "button-color": "#000000",
-        "button-box-shadow": "0 0 10px #00FFFF",
-        "sidebar-background-color": "#00008B",
-        "sidebar-color": "#00FFFF",
-        "sidebar-box-shadow": "0 0 10px #00FFFF",
-    },
-    "Gaming": {
-        "background-color": "#000000",
-        "color": "#FFA500",
-        "button-background-color": "#FFA500",
-        "button-color": "#000000",
-        "button-box-shadow": "0 0 10px #FFA500",
-        "sidebar-background-color": "#222222",
-        "sidebar-color": "#FFA500",
-        "sidebar-box-shadow": "0 0 10px #FFA500",
-    },
-    "Neon": {
-        "background-color": "#000000",
-        "color": "#00FFFF",
-        "button-background-color": "#00FFFF",
-        "button-color": "#000000",
-        "button-box-shadow": "0 0 20px #00FFFF",
-        "sidebar-background-color": "#000000",
-        "sidebar-color": "#00FFFF",
-        "sidebar-box-shadow": "0 0 20px #00FFFF",
-    },
-}
-
-# Set the initial theme
-theme = "Dark Mode"
-
-# Define a function to update the theme
-def update_theme(theme):
-    st.markdown(f"""
-        <style>
-        .stApp {{
-            background-color: {themes[theme]['background-color']};
-            color: {themes[theme]['color']};
-            font-family: 'Courier New', Courier, monospace;
-        }}
-        .stButton>button {{
-            background-color: {themes[theme]['button-background-color']};
-            color: {themes[theme]['button-color']};
-            font-weight: bold;
-            border-radius: 10px;
-            padding: 10px 20px;
-            transition: all 0.3s ease;
-            box-shadow: {themes[theme]['button-box-shadow']};
-        }}
-        .stButton>button:hover {{
-            background-color: {themes[theme]['button-color']};
-            color: {themes[theme]['button-background-color']};
-            border: 2px solid {themes[theme]['button-background-color']};
-            box-shadow: 0 0 20px {themes[theme]['button-background-color']};
-        }}
-        .stSidebar {{
-            background-color: {themes[theme]['sidebar-background-color']};
-            color: {themes[theme]['sidebar-color']};
-            box-shadow: {themes[theme]['sidebar-box-shadow']};
-        }}
-        </style>
-    """, unsafe_allow_html=True)
-
-# Add a theme selection dropdown menu to the sidebar
-theme = st.sidebar.selectbox("🎨 Choisissez un thème", list(themes.keys()), index=0, on_change=update_theme, args=(theme,))
-
-# Update the theme
-update_theme(theme)
-
 
 # Initialiser le contexte de la conversation
 if 'context' not in st.session_state:
@@ -224,39 +115,26 @@ def update_conversation():
 tab1, tab2 = st.tabs(["💬 Chat Écrit", "🎙️ Chat Vocal"])
 
 with tab1:
-    # Zone de saisie de texte
     user_input = st.text_input("Écrivez votre message ici")
-    
-    # Déplacer la case à cocher avant le bouton d'envoi
     read_aloud = st.checkbox("🔊Lire la réponse à voix haute")
-
-    # Interroger ChatGPT
-    response = ask_openai(user_input, st.session_state.context)
-    st.write(f"**Agent** : {response}")
 
     if st.button("Envoyer"):
         if user_input:
-            # Analyser le sentiment
             sentiment = analyze_sentiment(user_input)
             st.write(f"**Sentiment détecté** : {sentiment}")
 
-            # Interroger ChatGPT
             response = ask_openai(user_input, st.session_state.context)
             st.write(f"**Agent** : {response}")
 
-            # Ajouter au contexte
             st.session_state.context.append({"role": "user", "content": user_input})
             st.session_state.context.append({"role": "assistant", "content": response})
 
-            # Mettre à jour la zone de conversation
             update_conversation()
 
-            # Lire la réponse à voix haute si la case est cochée
             if read_aloud:
                 speak_text(response)
 
 with tab2:
-    # Bouton pour démarrer la reconnaissance vocale
     if st.button("🎙️ Parler à l'agent"):
         with st.spinner("🔊 Écoute en cours..."):
             recognized_text = recognize_speech()
@@ -266,25 +144,19 @@ with tab2:
                 st.warning("Arrêt de l'agent vocal.")
                 speak_text("Au revoir ! J'espère vous revoir bientôt.")
             else:
-                # Analyser le sentiment
                 sentiment = analyze_sentiment(recognized_text)
                 st.write(f"**Sentiment détecté** : {sentiment}")
 
-                # Interroger ChatGPT
                 response = ask_openai(recognized_text, st.session_state.context)
                 st.write(f"**Agent** : {response}")
 
-                # Ajouter au contexte
                 st.session_state.context.append({"role": "user", "content": recognized_text})
                 st.session_state.context.append({"role": "assistant", "content": response})
 
-                # Mettre à jour la zone de conversation
                 update_conversation()
-
-                # Synthèse vocale de la réponse
                 speak_text(response)
 
-# Bouton pour effacer l'historique
+# Effacer l'historique
 if st.button("🗑️ Effacer l'historique"):
     st.session_state.context = []
     update_conversation()
@@ -292,42 +164,11 @@ if st.button("🗑️ Effacer l'historique"):
 
 # Afficher des statistiques
 st.sidebar.title("📊 Statistiques")
-#st.sidebar.write(f"Nombre de messages : {len(st.session_state.context)}")
-#st.sidebar.write(f"Longueur moyenne des réponses : {sum(len(msg['content']) for msg in st.session_state.context) // len(st.session_state.context) if st.session_state.context else 0} caractères")
-
-total_messages = len(st.session_state.context) - 1  # Exclure le message système
+total_messages = len(st.session_state.context) - 1
 average_length = sum(len(msg['content']) for msg in st.session_state.context if msg['role'] != "system") / total_messages if total_messages > 0 else 0
 st.sidebar.write(f"**Nombre de messages** : {total_messages}")
 st.sidebar.write(f"**Longueur moyenne des réponses** : {average_length:.0f} caractères")
 
-
-# Easter egg
-if st.sidebar.button("🎁 Surprise !"):
-    jokes = [
-        "Pourquoi les robots ne prennent-ils jamais de vacances ? Parce qu'ils ont déjà trop de vis !",
-        "Comment s'appelle un robot qui fait toujours la même chose ? Un automate.",
-        "Que dit un robot quand il tombe en panne ? 'J'ai un bug-out-bag !'",
-    ]
-    joke = random.choice(jokes)
-    st.sidebar.write(joke)
-    speak_text(joke)
-
-# Mode nuit
-if st.sidebar.checkbox("🌙 Mode nuit"):
-    st.markdown("""
-        <style>
-        .stApp {
-            background-color: #1E1E1E;
-            color: white;
-        }
-                
-        </style>
-    """, unsafe_allow_html=True)
-
-# Afficher la date et l'heure actuelles
-now = datetime.datetime.now()
-st.sidebar.write(f"Date : {now.strftime('%Y-%m-%d')}",f"| Heure : {now.strftime('%H:%M')}")
-#st.sidebar.write(f"Heure : {now.strftime('%H:%M:%S')}")
-
 # Ajouter un droit d'auteur
+now = datetime.datetime.now()
 st.sidebar.write(f"© {now.year} Salam & Nesrine")
