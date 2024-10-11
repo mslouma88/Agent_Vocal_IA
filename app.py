@@ -2,18 +2,30 @@ import datetime
 import streamlit as st
 import speech_recognition as sr
 import openai
-import pyttsx3
+#import pyttsx3
 import threading
 import random
-import time
+#import time
 from gtts import gTTS
-import os
 import pygame
 from textblob import TextBlob
-import os
-import tempfile
+#import tempfile
 import uuid
 import io
+
+import os
+
+# Vérifier si on est sur Streamlit Cloud
+if os.environ.get('STREAMLIT_SERVER_HEADLESS'):
+    # Si on est sur Streamlit Cloud, désactiver pygame ou une partie du code liée à SDL
+    print("Exécution sur Streamlit Cloud - Pygame désactivé")
+else:
+    # Si on est local, on peut utiliser pygame
+    import pygame
+    pygame.init()
+    print("Exécution locale - Pygame activé")
+    # Ton code pygame ici
+
 
 # Set page config with an icon
 #st.set_page_config(page_title="Agent Vocal", page_icon=":smiley:")
