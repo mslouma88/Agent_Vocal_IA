@@ -2,28 +2,17 @@ import datetime
 import streamlit as st
 import speech_recognition as sr
 import openai
-#import pyttsx3
-#import threading
-import random
-#import time
 from gtts import gTTS
-import pygame
 from textblob import TextBlob
-import os
-#import tempfile
-#import uuid
 import io
+import base64
+import time
 
-# Set page config with an icon
-#st.set_page_config(page_title="Agent Vocal", page_icon=":smiley:")
+# Configuration de la page
 st.set_page_config(page_title="Agent Vocal", page_icon="images/icon.png")
 
-#st.write("Test d'affichage")
 # Configuration de l'API OpenAI
 openai.api_key = st.secrets["openai"]["api_key"]
-
-# Initialisation de pygame pour la lecture audio
-pygame.mixer.init()
 
 # Fonction de reconnaissance vocale améliorée
 def recognize_speech():
@@ -61,35 +50,19 @@ def ask_openai(prompt, context):
 
 # Fonction pour la synthèse vocale avec gTTS
 def speak_text(text):
-    # Créer un objet gTTS
     tts = gTTS(text=text, lang='fr')
-    
-    # Créer un tampon en mémoire
     fp = io.BytesIO()
-    
-    # Sauvegarder l'audio dans le tampon en mémoire
     tts.write_to_fp(fp)
-    
-    # Rembobiner le tampon au début
     fp.seek(0)
     
-    try:
-        # Charger l'audio depuis le tampon en mémoire
-        pygame.mixer.music.load(fp)
-        
-        # Jouer l'audio
-        pygame.mixer.music.play()
-        
-        # Attendre que la lecture soit terminée
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
+    # Encodage de l'audio en base64
+    audio_base64 = base64.b64encode(fp.read()).decode()
     
-    except Exception as e:
-        st.error(f"Erreur lors de la lecture audio : {e}")
+    # Création d'un élément audio HTML
+    audio_html = f'<audio autoplay><source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3"></audio>'
     
-    finally:
-        # Nettoyer le tampon en mémoire
-        fp.close()
+    # Affichage de l'élément audio
+    st.markdown(audio_html, unsafe_allow_html=True)
 
 # Fonction pour analyser le sentiment
 def analyze_sentiment(text):
@@ -108,9 +81,9 @@ st.title("🤖 Agent Vocal & Textuel v1.0")
 # Ajouter un logo à la barre latérale
 st.sidebar.image("images/logo3.png", width=280)
 
-# Define the themes
+# Définition des thèmes (code inchangé)
+
 themes = {
-   
     "Dark Mode": {
         "background-color": "#121212",
         "color": "#FFFFFF",
@@ -121,40 +94,90 @@ themes = {
         "sidebar-color": "#FFFFFF",
         "sidebar-box-shadow": "0 0 10px #FFFFFF",
     },
-    "Blue": {
-        "background-color": "#000000",
-        "color": "#00FFFF",
-        "button-background-color": "#00FFFF",
+    "Razer Chroma": {
+        "background-color": "#222222",
+        "color": "#00FF00",
+        "button-background-color": "#00FF00",
         "button-color": "#000000",
-        "button-box-shadow": "0 0 10px #00FFFF",
-        "sidebar-background-color": "#00008B",
+        "button-box-shadow": "0 0 10px #00FF00",
+        "sidebar-background-color": "#111111",
+        "sidebar-color": "#00FF00",
+        "sidebar-box-shadow": "0 0 10px #00FF00",
+    },
+    "Ocean Blue": {
+        "background-color": "rgba(0, 100, 148, 0.9)",
+        "color": "#FFFFFF",
+        "button-background-color": "#00BFFF",
+        "button-color": "#000033",
+        "button-box-shadow": "0 0 10px #00BFFF",
+        "sidebar-background-color": "rgba(0, 50, 74, 0.9)",
+        "sidebar-color": "#FFFFFF",
+        "sidebar-box-shadow": "0 0 10px #00BFFF",
+    },
+    "Neon Sunset": {
+        "background-color": "#2C3E50",  # Fond plus sombre pour un meilleur contraste
+        "color": "#FFFFFF",  # Texte blanc pour une meilleure lisibilité
+        "button-background-color": "#E74C3C",  # Rouge vif pour les boutons
+        "button-color": "#FFFFFF",  # Texte blanc sur les boutons
+        "button-box-shadow": "0 0 10px #E74C3C",
+        "sidebar-background-color": "#34495E",  # Sidebar légèrement plus claire que le fond
+        "sidebar-color": "#FFFFFF",  # Texte blanc dans la sidebar
+        "sidebar-box-shadow": "0 0 10px #E74C3C",
+    },
+    "Cyberpunk": {
+        "background-color": "#0D0221",
+        "color": "#F806CC",
+        "button-background-color": "#F806CC",
+        "button-color": "#0D0221",
+        "button-box-shadow": "0 0 10px #F806CC",
+        "sidebar-background-color": "#260650",
+        "sidebar-color": "#01FFC3",
+        "sidebar-box-shadow": "0 0 10px #01FFC3",
+    },
+    "Matrix": {
+        "background-color": "#000000",
+        "color": "#00FF41",
+        "button-background-color": "#003B00",
+        "button-color": "#00FF41",
+        "button-box-shadow": "0 0 10px #00FF41",
+        "sidebar-background-color": "#001F00",
+        "sidebar-color": "#00FF41",
+        "sidebar-box-shadow": "0 0 10px #00FF41",
+    },
+    "Midnight Galaxy": {
+        "background-color": "#0F0F3D",
+        "color": "#E6E6FA",
+        "button-background-color": "#4B0082",
+        "button-color": "#E6E6FA",
+        "button-box-shadow": "0 0 10px #9370DB",
+        "sidebar-background-color": "#191970",
+        "sidebar-color": "#E6E6FA",
+        "sidebar-box-shadow": "0 0 10px #9370DB",
+    },
+    "Retro Wave": {
+        "background-color": "#2B0F54",
+        "color": "#FF00FF",
+        "button-background-color": "#FF00FF",
+        "button-color": "#2B0F54",
+        "button-box-shadow": "0 0 10px #FF00FF",
+        "sidebar-background-color": "#120458",
         "sidebar-color": "#00FFFF",
         "sidebar-box-shadow": "0 0 10px #00FFFF",
     },
-    "Gaming": {
-        "background-color": "#000000",
-        "color": "#FFA500",
-        "button-background-color": "#FFA500",
-        "button-color": "#000000",
-        "button-box-shadow": "0 0 10px #FFA500",
-        "sidebar-background-color": "#222222",
-        "sidebar-color": "#FFA500",
-        "sidebar-box-shadow": "0 0 10px #FFA500",
-    },
-    "Neon": {
-        "background-color": "#000000",
-        "color": "#00FFFF",
-        "button-background-color": "#00FFFF",
-        "button-color": "#000000",
-        "button-box-shadow": "0 0 20px #00FFFF",
-        "sidebar-background-color": "#000000",
-        "sidebar-color": "#00FFFF",
-        "sidebar-box-shadow": "0 0 20px #00FFFF",
+    "Forest Mist": {
+        "background-color": "#2C5F2D",
+        "color": "#D0F0C0",
+        "button-background-color": "#97BC62",
+        "button-color": "#2C5F2D",
+        "button-box-shadow": "0 0 10px #97BC62",
+        "sidebar-background-color": "#1E441E",
+        "sidebar-color": "#D0F0C0",
+        "sidebar-box-shadow": "0 0 10px #97BC62",
     },
 }
 
 # Set the initial theme
-theme = "Dark Mode"
+theme = "Razer Chroma"
 
 # Define a function to update the theme
 def update_theme(theme):
@@ -163,7 +186,7 @@ def update_theme(theme):
         .stApp {{
             background-color: {themes[theme]['background-color']};
             color: {themes[theme]['color']};
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Roboto', sans-serif;
         }}
         .stButton>button {{
             background-color: {themes[theme]['button-background-color']};
@@ -185,6 +208,16 @@ def update_theme(theme):
             color: {themes[theme]['sidebar-color']};
             box-shadow: {themes[theme]['sidebar-box-shadow']};
         }}
+        .stTextInput>div>div>input {{
+            background-color: {themes[theme]['sidebar-background-color']};
+            color: {themes[theme]['sidebar-color']};
+            border-color: {themes[theme]['sidebar-color']};
+        }}
+        .stSelectbox>div>div>select {{
+            background-color: {themes[theme]['sidebar-background-color']};
+            color: {themes[theme]['sidebar-color']};
+            border-color: {themes[theme]['sidebar-color']};
+        }}
         </style>
     """, unsafe_allow_html=True)
 
@@ -193,7 +226,6 @@ theme = st.sidebar.selectbox("🎨 Choisissez un thème", list(themes.keys()), i
 
 # Update the theme
 update_theme(theme)
-
 
 # Initialiser le contexte de la conversation
 if 'context' not in st.session_state:
@@ -208,7 +240,7 @@ def update_conversation():
                            height=300)
 
 # Onglets pour choisir entre chat vocal et écrit
-tab1, tab2 = st.tabs(["💬 Chat Écrit", "🎙️ Chat Vocal"])
+tab1, tab2, tab3 = st.tabs(["💬 Chat Écrit", "🎙️ Chat Vocal", "💬 Chat Écrit v2.0"])
 
 with tab1:
     # Zone de saisie de texte
@@ -216,10 +248,6 @@ with tab1:
     
     # Déplacer la case à cocher avant le bouton d'envoi
     read_aloud = st.checkbox("🔊Lire la réponse à voix haute")
-
-    # Interroger ChatGPT
-    response = ask_openai(user_input, st.session_state.context)
-    st.write(f"**Agent** : {response}")
 
     if st.button("Envoyer"):
         if user_input:
@@ -271,6 +299,66 @@ with tab2:
                 # Synthèse vocale de la réponse
                 speak_text(response)
 
+with tab3:
+
+    # Contexte initial pour personnaliser le chatbot
+    contexte_initial = [
+        {"role": "system", "content": "Vous êtes un assistant virtuel intelligent multilangues spécialisé dans tous les domaines. Vous connaissez tout et vous pouvez donner des conseils."}
+    ]
+
+
+    # Initialiser le contexte de la conversation si ce n'est pas déjà fait
+    if "messages" not in st.session_state:
+        st.session_state.messages = contexte_initial
+
+    # Afficher les messages de l'historique
+    for message in st.session_state.messages:
+        if message["role"] != "system":
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+    # Zone de saisie de texte
+    prompt = st.chat_input("Écrivez votre message ici")
+
+    # Case à cocher pour la lecture à voix haute
+    read_aloud = st.checkbox("🔊 Lire la réponse à voix haute")
+
+    if prompt:
+        # Ajouter le message de l'utilisateur à l'historique
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        # Afficher le message de l'utilisateur
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Analyser le sentiment
+        sentiment = analyze_sentiment(prompt)
+        st.write(f"**Sentiment détecté** : {sentiment}")
+
+        # Afficher la réponse de l'assistant
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            full_response = ""
+            response = ask_openai(prompt, st.session_state.messages)
+
+            # Simuler un flux de réponse avec un délai en millisecondes
+            for chunk in response.split():
+                full_response += chunk + " "
+                time.sleep(0.05)
+                # Ajouter un curseur clignotant pour simuler la frappe
+                message_placeholder.markdown(full_response + "▌")
+            message_placeholder.markdown(full_response)
+
+        # Ajouter la réponse de l'assistant à l'historique
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+        # Mettre à jour la zone de conversation
+        update_conversation()
+
+        # Lire la réponse à voix haute si la case est cochée
+        if read_aloud:
+            speak_text(full_response)
+
 # Bouton pour effacer l'historique
 if st.button("🗑️ Effacer l'historique"):
     st.session_state.context = []
@@ -279,14 +367,10 @@ if st.button("🗑️ Effacer l'historique"):
 
 # Afficher des statistiques
 st.sidebar.title("📊 Statistiques")
-#st.sidebar.write(f"Nombre de messages : {len(st.session_state.context)}")
-#st.sidebar.write(f"Longueur moyenne des réponses : {sum(len(msg['content']) for msg in st.session_state.context) // len(st.session_state.context) if st.session_state.context else 0} caractères")
-
 total_messages = len(st.session_state.context) - 1  # Exclure le message système
 average_length = sum(len(msg['content']) for msg in st.session_state.context if msg['role'] != "system") / total_messages if total_messages > 0 else 0
 st.sidebar.write(f"**Nombre de messages** : {total_messages}")
 st.sidebar.write(f"**Longueur moyenne des réponses** : {average_length:.0f} caractères")
-
 
 # Easter egg
 if st.sidebar.button("🎁 Surprise !"):
@@ -307,14 +391,12 @@ if st.sidebar.checkbox("🌙 Mode nuit"):
             background-color: #1E1E1E;
             color: white;
         }
-                
         </style>
     """, unsafe_allow_html=True)
 
 # Afficher la date et l'heure actuelles
 now = datetime.datetime.now()
 st.sidebar.write(f"Date : {now.strftime('%Y-%m-%d')}",f"| Heure : {now.strftime('%H:%M')}")
-#st.sidebar.write(f"Heure : {now.strftime('%H:%M:%S')}")
 
 # Ajouter un droit d'auteur
 st.sidebar.write(f"© {now.year} Salam & Nesrine")
