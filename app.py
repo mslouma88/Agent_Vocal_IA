@@ -2,28 +2,16 @@ import datetime
 import streamlit as st
 import speech_recognition as sr
 import openai
-#import pyttsx3
-#import threading
 import random
-#import time
 from gtts import gTTS
-import pygame
 from textblob import TextBlob
-import os
-#import tempfile
-#import uuid
 import io
 
 # Set page config with an icon
-#st.set_page_config(page_title="Agent Vocal", page_icon=":smiley:")
 st.set_page_config(page_title="Agent Vocal", page_icon="images/icon.png")
 
-#st.write("Test d'affichage")
 # Configuration de l'API OpenAI
 openai.api_key = st.secrets["openai"]["api_key"]
-
-# Initialisation de pygame pour la lecture audio
-pygame.mixer.init()
 
 # Fonction de reconnaissance vocale améliorée
 def recognize_speech():
@@ -33,7 +21,11 @@ def recognize_speech():
     with microphone as source:
         st.write("🎧 **Écoute active...**")
         recognizer.adjust_for_ambient_noise(source, duration=1)
-        audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
+        try:
+            audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
+        except sr.WaitTimeoutError:
+            st.error("Aucune parole détectée. Veuillez réessayer.")
+            return None
 
     try:
         text = recognizer.recognize_google(audio, language='fr-FR')
@@ -73,23 +65,7 @@ def speak_text(text):
     # Rembobiner le tampon au début
     fp.seek(0)
     
-    try:
-        # Charger l'audio depuis le tampon en mémoire
-        pygame.mixer.music.load(fp)
-        
-        # Jouer l'audio
-        pygame.mixer.music.play()
-        
-        # Attendre que la lecture soit terminée
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
-    
-    except Exception as e:
-        st.error(f"Erreur lors de la lecture audio : {e}")
-    
-    finally:
-        # Nettoyer le tampon en mémoire
-        fp.close()
+    return fp
 
 # Fonction pour analyser le sentiment
 def analyze_sentiment(text):
@@ -110,7 +86,6 @@ st.sidebar.image("images/logo3.png", width=280)
 
 # Define the themes
 themes = {
-   
     "Dark Mode": {
         "background-color": "#121212",
         "color": "#FFFFFF",
@@ -189,11 +164,8 @@ def update_theme(theme):
     """, unsafe_allow_html=True)
 
 # Add a theme selection dropdown menu to the sidebar
-theme = st.sidebar.selectbox("🎨 Choisissez un thème", list(themes.keys()), index=0, on_change=update_theme, args=(theme,))
-
-# Update the theme
-update_theme(theme)
-
+selected_theme = st.sidebar.selectbox("🎨 Choisissez un thème", list(themes.keys()), index=0)
+update_theme(selected_theme)
 
 # Initialiser le contexte de la conversation
 if 'context' not in st.session_state:
@@ -215,11 +187,7 @@ with tab1:
     user_input = st.text_input("Écrivez votre message ici")
     
     # Déplacer la case à cocher avant le bouton d'envoi
-    read_aloud = st.checkbox("🔊Lire la réponse à voix haute")
-
-    # Interroger ChatGPT
-    response = ask_openai(user_input, st.session_state.context)
-    st.write(f"**Agent** : {response}")
+    read_aloud = st.checkbox("🔊 Lire la réponse à voix haute")
 
     if st.button("Envoyer"):
         if user_input:
@@ -240,36 +208,40 @@ with tab1:
 
             # Lire la réponse à voix haute si la case est cochée
             if read_aloud:
-                speak_text(response)
+                audio_fp = speak_text(response)
+                st.audio(audio_fp, format='audio/mp3')
 
 with tab2:
     # Bouton pour démarrer la reconnaissance vocale
     if st.button("🎙️ Parler à l'agent"):
         with st.spinner("🔊 Écoute en cours..."):
             recognized_text = recognize_speech()
-            st.write(f"**Vous avez dit** : {recognized_text}")
+            if recognized_text:
+                st.write(f"**Vous avez dit** : {recognized_text}")
 
-            if "arrêter" in recognized_text.lower():
-                st.warning("Arrêt de l'agent vocal.")
-                speak_text("Au revoir ! J'espère vous revoir bientôt.")
-            else:
-                # Analyser le sentiment
-                sentiment = analyze_sentiment(recognized_text)
-                st.write(f"**Sentiment détecté** : {sentiment}")
+                if "arrêter" in recognized_text.lower():
+                    st.warning("Arrêt de l'agent vocal.")
+                    audio_fp = speak_text("Au revoir ! J'espère vous revoir bientôt.")
+                    st.audio(audio_fp, format='audio/mp3')
+                else:
+                    # Analyser le sentiment
+                    sentiment = analyze_sentiment(recognized_text)
+                    st.write(f"**Sentiment détecté** : {sentiment}")
 
-                # Interroger ChatGPT
-                response = ask_openai(recognized_text, st.session_state.context)
-                st.write(f"**Agent** : {response}")
+                    # Interroger ChatGPT
+                    response = ask_openai(recognized_text, st.session_state.context)
+                    st.write(f"**Agent** : {response}")
 
-                # Ajouter au contexte
-                st.session_state.context.append({"role": "user", "content": recognized_text})
-                st.session_state.context.append({"role": "assistant", "content": response})
+                    # Ajouter au contexte
+                    st.session_state.context.append({"role": "user", "content": recognized_text})
+                    st.session_state.context.append({"role": "assistant", "content": response})
 
-                # Mettre à jour la zone de conversation
-                update_conversation()
+                    # Mettre à jour la zone de conversation
+                    update_conversation()
 
-                # Synthèse vocale de la réponse
-                speak_text(response)
+                    # Synthèse vocale de la réponse
+                    audio_fp = speak_text(response)
+                    st.audio(audio_fp, format='audio/mp3')
 
 # Bouton pour effacer l'historique
 if st.button("🗑️ Effacer l'historique"):
@@ -279,14 +251,11 @@ if st.button("🗑️ Effacer l'historique"):
 
 # Afficher des statistiques
 st.sidebar.title("📊 Statistiques")
-#st.sidebar.write(f"Nombre de messages : {len(st.session_state.context)}")
-#st.sidebar.write(f"Longueur moyenne des réponses : {sum(len(msg['content']) for msg in st.session_state.context) // len(st.session_state.context) if st.session_state.context else 0} caractères")
 
 total_messages = len(st.session_state.context) - 1  # Exclure le message système
 average_length = sum(len(msg['content']) for msg in st.session_state.context if msg['role'] != "system") / total_messages if total_messages > 0 else 0
 st.sidebar.write(f"**Nombre de messages** : {total_messages}")
 st.sidebar.write(f"**Longueur moyenne des réponses** : {average_length:.0f} caractères")
-
 
 # Easter egg
 if st.sidebar.button("🎁 Surprise !"):
@@ -297,7 +266,8 @@ if st.sidebar.button("🎁 Surprise !"):
     ]
     joke = random.choice(jokes)
     st.sidebar.write(joke)
-    speak_text(joke)
+    audio_fp = speak_text(joke)
+    st.audio(audio_fp, format='audio/mp3')
 
 # Mode nuit
 if st.sidebar.checkbox("🌙 Mode nuit"):
@@ -313,8 +283,7 @@ if st.sidebar.checkbox("🌙 Mode nuit"):
 
 # Afficher la date et l'heure actuelles
 now = datetime.datetime.now()
-st.sidebar.write(f"Date : {now.strftime('%Y-%m-%d')}",f"| Heure : {now.strftime('%H:%M')}")
-#st.sidebar.write(f"Heure : {now.strftime('%H:%M:%S')}")
+st.sidebar.write(f"Date : {now.strftime('%Y-%m-%d')} | Heure : {now.strftime('%H:%M')}")
 
 # Ajouter un droit d'auteur
 st.sidebar.write(f"© {now.year} Salam & Nesrine")
