@@ -2,3 +2,4 @@ env/
 .streamlit/
 autres/
 .devcontainer/
+__main__.py
