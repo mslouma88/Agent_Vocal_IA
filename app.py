@@ -1,3 +1,4 @@
+import datetime
 import streamlit as st
 import speech_recognition as sr
 import openai
@@ -13,6 +14,10 @@ import os
 import tempfile
 import uuid
 import io
+
+# Set page config with an icon
+#st.set_page_config(page_title="Agent Vocal", page_icon=":smiley:")
+st.set_page_config(page_title="Agent Vocal", page_icon="images/icon.png")
 
 #st.write("Test d'affichage")
 # Configuration de l'API OpenAI
@@ -99,7 +104,10 @@ def analyze_sentiment(text):
         return "neutre"
 
 # Interface Streamlit
-st.title("🤖 Agent Vocal et Textuel Futuriste v2.1")
+st.title("🤖 Agent Vocal & Textuel v1.0")
+
+# Ajouter un logo à la barre latérale
+st.sidebar.image("images/logo3.png", width=280)
 
 # Define the themes
 themes = {
@@ -114,7 +122,7 @@ themes = {
         "sidebar-color": "#FFFFFF",
         "sidebar-box-shadow": "0 0 10px #FFFFFF",
     },
-    "Blue Futuristic": {
+    "Blue": {
         "background-color": "#000000",
         "color": "#00FFFF",
         "button-background-color": "#00FFFF",
@@ -182,7 +190,7 @@ def update_theme(theme):
     """, unsafe_allow_html=True)
 
 # Add a theme selection dropdown menu to the sidebar
-theme = st.sidebar.selectbox("Choisissez un thème", list(themes.keys()), index=0, on_change=update_theme, args=(theme,))
+theme = st.sidebar.selectbox("🎨 Choisissez un thème", list(themes.keys()), index=0, on_change=update_theme, args=(theme,))
 
 # Update the theme
 update_theme(theme)
@@ -208,7 +216,7 @@ with tab1:
     user_input = st.text_input("Écrivez votre message ici")
     
     # Déplacer la case à cocher avant le bouton d'envoi
-    read_aloud = st.checkbox("Lire la réponse à voix haute")
+    read_aloud = st.checkbox("🔊Lire la réponse à voix haute")
 
     # Interroger ChatGPT
     response = ask_openai(user_input, st.session_state.context)
@@ -272,8 +280,14 @@ if st.button("🗑️ Effacer l'historique"):
 
 # Afficher des statistiques
 st.sidebar.title("📊 Statistiques")
-st.sidebar.write(f"Nombre de messages : {len(st.session_state.context)}")
-st.sidebar.write(f"Longueur moyenne des réponses : {sum(len(msg['content']) for msg in st.session_state.context) // len(st.session_state.context) if st.session_state.context else 0} caractères")
+#st.sidebar.write(f"Nombre de messages : {len(st.session_state.context)}")
+#st.sidebar.write(f"Longueur moyenne des réponses : {sum(len(msg['content']) for msg in st.session_state.context) // len(st.session_state.context) if st.session_state.context else 0} caractères")
+
+total_messages = len(st.session_state.context) - 1  # Exclure le message système
+average_length = sum(len(msg['content']) for msg in st.session_state.context if msg['role'] != "system") / total_messages if total_messages > 0 else 0
+st.sidebar.write(f"**Nombre de messages** : {total_messages}")
+st.sidebar.write(f"**Longueur moyenne des réponses** : {average_length:.0f} caractères")
+
 
 # Easter egg
 if st.sidebar.button("🎁 Surprise !"):
@@ -297,3 +311,11 @@ if st.sidebar.checkbox("🌙 Mode nuit"):
                 
         </style>
     """, unsafe_allow_html=True)
+
+# Afficher la date et l'heure actuelles
+now = datetime.datetime.now()
+st.sidebar.write(f"Date : {now.strftime('%Y-%m-%d')}",f"| Heure : {now.strftime('%H:%M')}")
+#st.sidebar.write(f"Heure : {now.strftime('%H:%M:%S')}")
+
+# Ajouter un droit d'auteur
+st.sidebar.write(f"© {now.year} Salam & Nesrine")
