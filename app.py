@@ -17,7 +17,7 @@ else:
     # Si on est local, on peut utiliser pygame
     import pygame
     pygame.init()
-    pygame.mixer.init()
+    #pygame.mixer.init()
     pygame_enabled = True
     st.write("Exécution locale - Pygame activé")
 
