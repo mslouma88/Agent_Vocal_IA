@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import streamlit as st
 import speech_recognition as sr
 import openai
@@ -488,9 +488,15 @@ if st.sidebar.checkbox("🌙 Mode nuit"):
         </style>
     """, unsafe_allow_html=True)
 
-# Afficher la date et l'heure actuelles
-now = datetime.datetime.now()
-st.sidebar.write(f"Date : {now.strftime('%Y-%m-%d')}",f"| Heure : {now.strftime('%H:%M')}")
+
+# Désactiver le cache pour cette fonction
+@st.cache_data
+def get_current_time():
+    return datetime.now()
+
+# Obtenir l'heure et la date actuelles
+now = get_current_time()
+st.sidebar.write(f"Date : {now.strftime('%Y-%m-%d')}",f" Heure : {now.strftime('%H:%M')}")
 
 # Ajouter un droit d'auteur
 st.sidebar.write(f"© {now.year} Salam & Nesrine")
