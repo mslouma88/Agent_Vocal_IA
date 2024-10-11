@@ -7,6 +7,11 @@ from textblob import TextBlob
 import io
 import base64
 import time
+import fitz  # PyMuPDF pour la gestion des PDF
+import pandas as pd
+import os
+import tempfile
+import random
 
 # Configuration de la page
 st.set_page_config(page_title="Agent Vocal", page_icon="images/icon.png")
@@ -239,11 +244,48 @@ def update_conversation():
                            value="\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in st.session_state.context]),
                            height=300)
 
+# Fonction pour résumer le texte en français
+def summarize_text(text):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that summarizes text in French."},
+            {"role": "user", "content": f"Veuillez résumer le texte suivant en français : {text}"}
+        ]
+    )
+    return response.choices[0].message.content
+
+# Fonction pour lire le contenu d'un fichier PDF
+def read_pdf(file):
+    pdf_reader = fitz.open(stream=file.read(), filetype="pdf")
+    text = ""
+    for page_num in range(len(pdf_reader)):
+        page = pdf_reader.load_page(page_num)
+        text += page.get_text("text")  # Extraire le texte de chaque page
+    pdf_reader.close()
+    return text
+
+def analyser_donnees(df):
+    # Convertir le DataFrame en texte
+    data_text = df.head().to_string()
+    prompt = f"Analyse les données suivantes et fournis des insights pertinents :\n\n{data_text}"
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "Vous êtes un analyste de données."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=500,
+        temperature=0.3,
+    )
+    analyse = response.choices[0].message['content'].strip()
+    return analyse
+
 # Onglets pour choisir entre chat vocal et écrit
-tab1, tab2, tab3 = st.tabs(["💬 Chat Écrit", "🎙️ Chat Vocal", "💬 Chat Écrit v2.0"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["💬 Chat Écrit", "🎙️ Chat Vocal", "💬 Chat Écrit v2.0", "📜 Résumeur de Fichiers", "📶 Analyse de Données Structurées" ])
 
 with tab1:
-    # Zone de saisie de texte
+   # Zone de saisie de texte
     user_input = st.text_input("Écrivez votre message ici")
     
     # Déplacer la case à cocher avant le bouton d'envoi
@@ -358,6 +400,58 @@ with tab3:
         # Lire la réponse à voix haute si la case est cochée
         if read_aloud:
             speak_text(full_response)
+with tab4:
+        st.write("Téléchargez vos fichiers texte ou PDF ci-dessous pour obtenir des résumés en français.")
+
+        # Ajout d'un bouton pour parcourir les fichiers (TXT et PDF)
+        uploaded_files = st.file_uploader("Choisissez des fichiers texte ou PDF", type=["txt", "pdf"], accept_multiple_files=True)
+
+        # Bouton pour générer les résumés
+        if st.button("Générer des résumés"):
+            if uploaded_files:
+                for uploaded_file in uploaded_files:
+                    # Vérification du type de fichier (TXT ou PDF)
+                    if uploaded_file.name.endswith(".txt"):
+                        # Lire le contenu d'un fichier texte
+                        file_content = uploaded_file.read().decode("utf-8")
+                        st.write(f"Résumé du fichier texte : {uploaded_file.name}")
+                    elif uploaded_file.name.endswith(".pdf"):
+                        # Lire le contenu d'un fichier PDF
+                        file_content = read_pdf(uploaded_file)
+                        st.write(f"Résumé du fichier PDF : {uploaded_file.name}")
+                    else:
+                        st.error("Format de fichier non supporté.")
+
+                    # Appel de la fonction de résumé (en français)
+                    summary = summarize_text(file_content)
+
+                    # Afficher le résumé
+                    st.markdown(f"<div style='background-color: #001212; padding: 10px; border-radius: 5px;'>{summary}</div>", unsafe_allow_html=True)
+            else:
+                st.error("Veuillez télécharger au moins un fichier pour générer un résumé.")
+with tab5:
+        st.write("Téléchargez vos fichiers texte ou PDF ci-dessous pour obtenir")
+        fichier = st.file_uploader("Téléchargez un fichier CSV ou Excel", type=["csv", "xlsx"])
+        
+        if fichier is not None:
+            try:
+                if fichier.type == "text/csv":
+                    df = pd.read_csv(fichier)
+                else:
+                    df = pd.read_excel(fichier)
+                st.subheader("Aperçu des Données")
+                st.dataframe(df.head())
+                
+                if st.button("Analyser les Données"):
+                    with st.spinner("Analyse en cours..."):
+                        analyse = analyser_donnees(df)
+                    st.success("Analyse terminée !")
+                    st.write("**Insights :**")
+                    st.write(analyse)
+            except Exception as e:
+                st.error(f"Erreur lors du traitement du fichier : {e}")
+        else:
+            st.info("Veuillez télécharger un fichier CSV ou Excel pour commencer.")
 
 # Bouton pour effacer l'historique
 if st.button("🗑️ Effacer l'historique"):
