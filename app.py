@@ -2,16 +2,16 @@ import datetime
 import streamlit as st
 import speech_recognition as sr
 import openai
-import pyttsx3
-import threading
+#import pyttsx3
+#import threading
 import random
-import time
+#import time
 from gtts import gTTS
 import pygame
 from textblob import TextBlob
 import os
-import tempfile
-import uuid
+#import tempfile
+#import uuid
 import io
 
 # Set page config with an icon
