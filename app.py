@@ -1,6 +1,7 @@
 from datetime import datetime
 import streamlit as st
 import speech_recognition as sr
+import sounddevice as sd
 import openai
 from gtts import gTTS
 from textblob import TextBlob
@@ -430,7 +431,6 @@ with tab4:
             else:
                 st.error("Veuillez télécharger au moins un fichier pour générer un résumé.")
 with tab5:
-        st.write("Téléchargez vos fichiers texte ou PDF ci-dessous pour obtenir")
         fichier = st.file_uploader("Téléchargez un fichier CSV ou Excel", type=["csv", "xlsx"])
         
         if fichier is not None:
