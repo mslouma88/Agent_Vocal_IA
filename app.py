@@ -1,7 +1,6 @@
 from datetime import datetime
 import streamlit as st
 import speech_recognition as sr
-import sounddevice as sd
 import openai
 from gtts import gTTS
 from textblob import TextBlob
