@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI/CD Generative IA
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: mon-repo-ecr  # Remplacez par le nom de votre repo ECR
+        ECR_REPOSITORY: generativeia  # Remplacez par le nom de votre repo ECR
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
