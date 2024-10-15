@@ -1,4 +1,4 @@
-name: CI/CD Générative IA
+name: CI/CD GénérativeIA
 
 on:
   push:
