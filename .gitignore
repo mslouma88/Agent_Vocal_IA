@@ -1,0 +1,7 @@
+env/
+.streamlit/
+autres/
+appv1.py
+appv2.py
+Langchain.py
+Dockerfile
