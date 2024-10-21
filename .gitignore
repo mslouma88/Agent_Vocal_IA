@@ -1,7 +1,7 @@
 env/
 .streamlit/
 autres/
-appv1.py
-appv2.py
+app.py
+__main__.py
 Langchain.py
 Dockerfile

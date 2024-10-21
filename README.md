@@ -4,6 +4,7 @@
 
 
 
+
 # 💬 Agent Vocal avec ChatGPT
 
 Ce projet consiste en un agent vocal interactif qui utilise le modèle de langage GPT (ChatGPT) pour répondre aux questions des utilisateurs. L'application est dotée d'une interface graphique créée avec **Streamlit** et comprend la reconnaissance vocale, l'interaction avec le modèle GPT 3.5, et la synthèse vocale.
@@ -21,6 +22,7 @@ L'agent vocal capture la voix de l'utilisateur, la convertit en texte à l'aide 
 ## 🚀 Démonstration en Ligne
 
 L'application est hébergée sur **Streamlit Cloud** et accessible à l'URL suivante : [Lien vers l'Application- à venir](#)  
+
 
 ## 🛠️ Installation et Exécution Locale
 
@@ -44,12 +46,14 @@ Assurez-vous d'avoir les éléments suivants installés :
 
     ```bash
     git clone https://github.com/mslouma88/Agent_Vocal_IA
+
     ```
 
 2. Accédez au répertoire du projet :
 
     ```bash
     cd Agent_Vocal_IA
+
     ```
 
 3. Créez un environnement virtuel (recommandé) et activez-le :
@@ -135,6 +139,5 @@ Ce projet est sous [licence MIT](LICENCE). Vous êtes libre de l'utiliser, de le
 - **Nesrine BENAMOR** 🧑‍💻 - [@github](https://github.com/Nes890) - Développeur et concepteur principal de l'agent vocal.
 
 Pour toute question ou suggestion, n'hésitez pas à nous contacter.
-
 
 Merci d'avoir utilisé cet agent vocal futuriste ! 🚀
