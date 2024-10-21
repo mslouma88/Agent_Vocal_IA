@@ -4,9 +4,9 @@
 
 
 
-# 💬 Agent Vocal Futuriste avec ChatGPT
+# 💬 Agent Vocal avec ChatGPT
 
-Ce projet consiste en un agent vocal interactif qui utilise le modèle de langage GPT (ChatGPT) pour répondre aux questions des utilisateurs. L'application est dotée d'une interface graphique futuriste créée avec **Streamlit** et comprend la reconnaissance vocale, l'interaction avec le modèle GPT, et la synthèse vocale.
+Ce projet consiste en un agent vocal interactif qui utilise le modèle de langage GPT (ChatGPT) pour répondre aux questions des utilisateurs. L'application est dotée d'une interface graphique créée avec **Streamlit** et comprend la reconnaissance vocale, l'interaction avec le modèle GPT 3.5, et la synthèse vocale.
 
 ## 📋 Description
 
@@ -44,13 +44,13 @@ Assurez-vous d'avoir les éléments suivants installés :
 1. Clonez le dépôt GitHub sur votre machine locale :
 
     ```bash
-    git clone https://github.com/votre-utilisateur/agent-vocal-futuriste.git
+    git clone https://github.com/mslouma88/Agent_Vocal_IA
     ```
 
 2. Accédez au répertoire du projet :
 
     ```bash
-    cd agent-vocal-futuriste
+    cd Agent_Vocal_IA
     ```
 
 3. Créez un environnement virtuel (recommandé) et activez-le :
@@ -98,21 +98,22 @@ Pour déployer cette application sur Streamlit Cloud :
 2. Créez un fichier requirements.txt avec les bibliothèques suivantes :
 
     ```text
-    streamlit
-    speech_recognition
-    openai==0.28
-    random
-    gtts
-    pygame
-    textblob
-    io
+    streamlit==1.39.0
+    SpeechRecognition==3.10.4
+    openai==0.28.0
+    pyttsx3==2.98
+    pygame==2.6.1
+    gTTS==2.5.3
+    textblob==0.18.0.post0
+    #pipwin==0.5.2
+    PyAudio==0.2.14
     ```
 
 3. Connectez-vous à [Streamlit Cloud](https://streamlit.io/cloud).
 
 4. Cliquez sur "New App" et sélectionnez votre dépôt GitHub.
 
-5. Choisissez le fichier `agent_vocal_streamlit.py` comme script principal.
+5. Choisissez le fichier `agent_vocal.py` comme script principal.
 
 6. Cliquez sur Deploy pour lancer le déploiement.
 
@@ -134,7 +135,7 @@ Ce projet est sous [licence MIT](LICENCE). Vous êtes libre de l'utiliser, de le
 - **Salam MEJRI** 🧑‍💻 - [@github](https://github.com/mslouma88) - Développeur et concepteur principal de l'agent vocal.
 - **Nesrine BENAMOR** 🧑‍💻 - [@github](https://github.com/Nes890) - Développeur et concepteur principal de l'agent vocal.
 
-Pour toute question ou suggestion, n'hésitez pas à me contacter.
+Pour toute question ou suggestion, n'hésitez pas à nous contacter.
 
 
 Merci d'avoir utilisé cet agent vocal futuriste ! 🚀
