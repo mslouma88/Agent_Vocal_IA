@@ -20,8 +20,7 @@ L'agent vocal capture la voix de l'utilisateur, la convertit en texte à l'aide 
 
 ## 🚀 Démonstration en Ligne
 
-L'application est hébergée sur **Streamlit Cloud** et accessible à l'URL suivante : [Lien vers l'Application](#)  
-*(Remplacez `#` par l'URL générée après le déploiement de votre application sur Streamlit Cloud)*
+L'application est hébergée sur **Streamlit Cloud** et accessible à l'URL suivante : [Lien vers l'Application- à venir](#)  
 
 ## 🛠️ Installation et Exécution Locale
 
