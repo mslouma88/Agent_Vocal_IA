@@ -133,10 +133,10 @@ Une fois déployée, l'application sera accessible via une URL publique que vous
 📝 Licence
 Ce projet est sous [licence MIT](LICENCE). Vous êtes libre de l'utiliser, de le modifier et de le distribuer sous les conditions de la licence.
 
-👤 Auteur(e)s
+👤 Auteur
 
 - **Salam MEJRI** 🧑‍💻 - [@github](https://github.com/mslouma88) - Développeur et concepteur principal de l'agent vocal.
-- **Nesrine BENAMOR** 🧑‍💻 - [@github](https://github.com/Nes890) - Développeur et concepteur principal de l'agent vocal.
+
 
 Pour toute question ou suggestion, n'hésitez pas à nous contacter.
 
